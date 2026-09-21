@@ -1,4 +1,12 @@
-# React + Vite
+# Shady Art portfolio
+
+## Editing the portfolio
+
+Open `/shady-dashboard` directly. It is intentionally not linked from the public website. Sign in, then add café or nursery projects, select several photos for each project, and update the contact links. Changes are saved in the browser currently in use.
+
+The starter sign-in is `shady@example.com` / `ChangeMe123!`. Before publishing, configure `VITE_SHADY_EMAIL` and `VITE_SHADY_PASSWORD` in a local `.env` file.
+
+> This is a front-end access screen. A truly private dashboard needs server-side authentication plus a database/file-storage service; browser-side credentials and uploaded images cannot be securely protected after deployment.
 
 This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
 
