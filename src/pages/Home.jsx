@@ -291,7 +291,6 @@ export default function Home() {
 
       {/* ───────── Contact ───────── */}
       <section className="contact" id="contact">
-        <div className="scribble">✦</div>
         <p className="eyebrow">READY TO COLOUR YOUR SPACE?</p>
         <h2>Send a message create<br /><span>something together.</span></h2>
 
