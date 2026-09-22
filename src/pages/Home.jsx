@@ -141,7 +141,7 @@ export default function Home() {
           target="_blank"
           rel="noreferrer"
         >
-          Let's talk ↗
+          Send a message ↗
         </a>
       </header>
 
@@ -293,7 +293,7 @@ export default function Home() {
       <section className="contact" id="contact">
         <div className="scribble">✦</div>
         <p className="eyebrow">READY TO COLOUR YOUR SPACE?</p>
-        <h2>Let's create<br /><span>something together.</span></h2>
+        <h2>Send a message create<br /><span>something together.</span></h2>
 
         <a
           className="paint-button"

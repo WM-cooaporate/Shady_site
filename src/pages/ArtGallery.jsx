@@ -25,7 +25,7 @@ export default function ArtGallery() {
     target="_blank"
     rel="noreferrer"
   >
-    Let's talk ↗
+    Send a message  ↗
   </a>
 </header>
       {/* ───────── Hero ───────── */}
@@ -98,7 +98,7 @@ export default function ArtGallery() {
       <section className="contact">
         <div className="scribble">✦</div>
         <p className="eyebrow">WANT A MURAL LIKE THIS?</p>
-        <h2>Let's paint<br /><span>your space.</span></h2>
+        <h2>Send a message paint<br /><span>your space.</span></h2>
 
         <a
           className="paint-button"
