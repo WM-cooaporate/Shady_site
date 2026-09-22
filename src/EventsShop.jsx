@@ -35,12 +35,12 @@ async function copyToClipboard(text) {
 export default function EventsShop() {
   const [filter, setFilter] = useState('All')
   const [selected, setSelected] = useState(null)
-  const [details, setDetails] = useState({ name: '', phone: '', quantity: '1', email: '', place: '' })
+  const [details, setDetails] = useState({ name: '', phone: '', quantity: '1', place: '' })
   const [copied, setCopied] = useState(false)
 
   const visible = items.filter(item => filter === 'All' || item.type === filter)
 
-  const message = selected && `New ${selected.type} request\n${selected.title}\n\nName: ${details.name}\nPhone: ${details.phone}\nEmail: ${details.email}\nQuantity / attendees: ${details.quantity}\nPlace / delivery location: ${details.place}`
+  const message = selected && `New ${selected.type} request\n${selected.title}\n\nName: ${details.name}\nPhone: ${details.phone}\nQuantity / attendees: ${details.quantity}\nPlace / delivery location: ${details.place}`
 
   const handleInstagram = async () => {
     const ok = await copyToClipboard(message)
@@ -113,7 +113,7 @@ export default function EventsShop() {
               ['name', 'Name', 'text'],
               ['phone', 'Phone number', 'tel'],
               ['quantity', 'Quantity / attendees', 'number'],
-              ['email', 'Email', 'email'],
+              
               ['place', 'Place / delivery location', 'text'],
             ].map(([key, label, type]) => (
               <label key={key}>

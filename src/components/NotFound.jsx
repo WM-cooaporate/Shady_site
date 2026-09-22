@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom'
+
 export default function NotFound() {
   return (
     <main className="not-found">
@@ -7,9 +9,9 @@ export default function NotFound() {
         <p className="lead">
           The page you're looking for doesn't exist — or maybe it moved.
         </p>
-        <a className="paint-button" href="/">
-          Back to portfolio <span>→</span>
-        </a>
+        <Link className="paint-button" to="/">
+          Back to home <span>→</span>
+        </Link>
       </div>
       <div className="not-found-art">
         <div className="paint-stroke stroke-1" />

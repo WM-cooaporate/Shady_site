@@ -1,0 +1,129 @@
+import { useState } from 'react'
+import { Link } from 'react-router-dom'
+import { usePortfolio } from '../context/PortfolioContext'
+import Collection from '../components/Collection'
+import ContactLinks from '../components/ContactLinks'
+
+const WHATSAPP = 'https://wa.me/201201200208'
+
+export default function ArtGallery() {
+  const { data } = usePortfolio()
+  const [open, setOpen] = useState(null)
+
+  const projects = data.artProjects || []
+
+  return (
+    <main>
+      {/* ───────── Header ───────── */}<header className="topbar">
+  <Link className="brand" to="/">
+    <span className="brand-mark">A</span>
+    <span>ART <i>VISION</i></span>
+  </Link>
+  <a
+    className="small-link"
+    href={WHATSAPP}
+    target="_blank"
+    rel="noreferrer"
+  >
+    Let's talk ↗
+  </a>
+</header>
+      {/* ───────── Hero ───────── */}
+      <section className="hero">
+        <div className="hero-copy">
+          <p className="eyebrow">OUR ART GALLERY</p>
+          <h1>
+            Every wall<br />
+            <span>has a story.</span>
+          </h1>
+          <p className="lead">
+            From cafés to nurseries and everything in between — here's a
+            collection of the walls we've painted with love.
+          </p>
+          <div className="hero-actions">
+            <a className="paint-button" href="#gallery">
+              Explore the art <span>↓</span>
+            </a>
+            <Link to="/">← Back to home</Link>
+          </div>
+        </div>
+
+        <div className="hero-art">
+          <div className="sun" />
+          <div className="canvas">
+            <div className="paint-stroke stroke-1" />
+            <div className="paint-stroke stroke-2" />
+            <div className="paint-stroke stroke-3" />
+            <span>OUR<br />ART<br />WORK</span>
+          </div>
+          <div className="brush">🎨</div>
+          <div className="dot dot1" />
+          <div className="dot dot2" />
+        </div>
+      </section>
+
+      {/* ───────── Gallery ───────── */}
+      <section className="portfolio" id="gallery">
+        <div className="section-title reveal">
+          <div>
+            <p className="eyebrow">SELECTED WORK</p>
+            <h2>Painted with care.</h2>
+          </div>
+          <p>Click any project to see the full collection.</p>
+        </div>
+
+        {projects.length > 0 ? (
+          <div className="gallery-grid">
+            {projects.map((p, i) => (
+              <button
+                className={'work work-' + (i % 4)}
+                key={p.id}
+                onClick={() => setOpen(p)}
+              >
+                <img src={p.images[0]} alt={p.title} />
+                <span className="work-info">
+                  <small>ART</small>
+                  <strong>{p.title}</strong>
+                  <i>View collection ↗</i>
+                </span>
+              </button>
+            ))}
+          </div>
+        ) : (
+          <p className="empty">No art projects yet. Check back soon!</p>
+        )}
+      </section>
+
+      {/* ───────── Contact ───────── */}
+      <section className="contact">
+        <div className="scribble">✦</div>
+        <p className="eyebrow">WANT A MURAL LIKE THIS?</p>
+        <h2>Let's paint<br /><span>your space.</span></h2>
+
+        <a
+          className="paint-button"
+          href={WHATSAPP}
+          target="_blank"
+          rel="noreferrer"
+        >
+          Talk on WhatsApp <span>↗</span>
+        </a>
+
+        <ContactLinks contacts={data.contacts} />
+
+        <p style={{ marginTop: 60, fontSize: 11, color: '#ffffff88', fontFamily: "'DM Mono'" }}>
+          © {new Date().getFullYear()} Art Vision · Founded by Shady Gad
+        </p>
+      </section>
+
+      {/* ───────── Collection Modal ───────── */}
+      {open && (
+        <Collection
+          project={open}
+          projects={projects}
+          onClose={() => setOpen(null)}
+        />
+      )}
+    </main>
+  )
+}

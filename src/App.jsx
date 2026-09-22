@@ -1,42 +1,48 @@
-import { useEffect, useState } from 'react'
-import './index.css'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { PortfolioProvider } from './context/PortfolioContext'
+import { useScrollReveal } from './hooks/useScrollReveal'
 
-const STORE = 'shady-portfolio-v1', SESSION = 'shady-dashboard-session', DASH = '/shady-dashboard'
-const ADMIN_EMAIL = import.meta.env.VITE_SHADY_EMAIL || 'shady@example.com'
-const ADMIN_PASSWORD = import.meta.env.VITE_SHADY_PASSWORD || 'ChangeMe123!'
-const seed = {
-    contacts: { whatsapp: 'https://wa.me/201201200208', instagram: 'https://www.instagram.com/shady.gad33/', facebook: 'https://web.facebook.com/shady.gad.98', instagramArtVision: 'https://www.instagram.com/art__vision.eg/', facebookArtVision: 'https://web.facebook.com/profile.php?id=61563374294991', email: '' }, projects: [
-        { id: 1, title: 'Luna Café Mural', category: 'Cafes', description: 'A warm mural inspired by coffee, conversation, and the small stories shared around a table.', images: ['https://images.unsplash.com/photo-1513364776144-60967b0f800f?auto=format&fit=crop&w=1200&q=85'] },
-        { id: 2, title: 'World of Colour', category: 'Nurseries', description: 'Playful, child-safe illustrations that turn a wall into a place for imagination and learning.', images: ['https://images.unsplash.com/photo-1580136579312-94651dfd596d?auto=format&fit=crop&w=1200&q=85'] },
-        { id: 3, title: 'Coffee & Art', category: 'Cafes', description: 'Soft colours and handmade details that make the space feel warmer and more memorable.', images: ['https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?auto=format&fit=crop&w=1200&q=85'] },
-        { id: 4, title: 'Dream City', category: 'Nurseries', description: 'Characters and illustrated stories that invite children to discover their world with a smile.', images: ['https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=85'] }
-    ], offers: [
-        { id: 101, type: 'Event', title: 'Open Painting Day', description: 'A relaxed day of colour, painting, and creative conversation with Shady.', price: 'Book your place', image: 'https://images.unsplash.com/photo-1513364776144-60967b0f800f?auto=format&fit=crop&w=1200&q=85' },
-        { id: 102, type: 'Product', title: 'Custom Art Print', description: 'A made-to-order art print designed to bring a little colour into your space.', price: 'Order yours', image: 'https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?auto=format&fit=crop&w=1200&q=85' }
-    ]
+import Home from './pages/Home'
+import ArtGallery from './pages/ArtGallery'
+import Dashboard from './pages/Dashboard'
+import SiteNav from './components/SiteNav'
+import NotFound from './components/NotFound'
+
+function PublicLayout({ children }) {
+  useScrollReveal()
+  return (
+    <>
+      <SiteNav />
+      {children}
+    </>
+  )
 }
-const getData = () => { try { const saved = JSON.parse(localStorage.getItem(STORE)); if (!saved) return seed; const oldContacts = saved.contacts || {}; const hasSocial = Object.values(oldContacts).some(Boolean); return { ...seed, ...saved, contacts: hasSocial ? { ...seed.contacts, ...oldContacts } : { ...seed.contacts, email: oldContacts.email || '' } } } catch { return seed } }
-const filesToData = files => Promise.all([...files].map(file => new Promise((ok, bad) => { const r = new FileReader(); r.onload = () => ok(r.result); r.onerror = bad; r.readAsDataURL(file) })))
 
-function ContactLinks({ contacts }) { const items = [['WhatsApp', contacts.whatsapp], ['Instagram · Shady', contacts.instagram], ['Facebook · Shady', contacts.facebook], ['Instagram · Art Vision', contacts.instagramArtVision], ['Facebook · Art Vision', contacts.facebookArtVision], ['Email', contacts.email && `mailto:${contacts.email}`]].filter(x => x[1]); return items.length ? <div className="socials">{items.map(([label, url]) => <a key={label} href={url} target={label === 'Email' ? undefined : '_blank'} rel="noreferrer">{label}</a>)}</div> : null }
-function Collection({ project, projects, onClose }) { const [active, setActive] = useState(project); return <div className="overlay" onClick={onClose}><section className="collection-modal" onClick={e => e.stopPropagation()}><button className="close" onClick={onClose}>×</button><p className="eyebrow">{active.category.toUpperCase()} COLLECTION</p><h2>{active.title}</h2><p className="collection-description">{active.description}</p><div className="collection-images">{active.images.map((image, i) => <img key={i} src={image} alt={`${active.title} ${i + 1}`} />)}</div><h3>More {active.category.toLowerCase()} work</h3><div className="collection-list">{projects.map(item => <button key={item.id} className={item.id === active.id ? 'active-project' : ''} onClick={() => setActive(item)}>{item.title}</button>)}</div></section></div> }
-function PublicSite({ data }) { const [category, setCategory] = useState('All'), [open, setOpen] = useState(null); const shown = category === 'All' ? data.projects : data.projects.filter(p => p.category === category); return <main><header className="topbar"><a className="brand" href="/"><span className="brand-mark">S</span><span>SHADY <i>ARTIST</i></span></a><nav><a href="#work">Work</a><a href="#contact">Contact</a></nav>{data.contacts.whatsapp && <a className="small-link" href={data.contacts.whatsapp} target="_blank" rel="noreferrer">Let’s talk ↗</a>}</header><section className="hero"><div className="hero-copy"><p className="eyebrow">MURALS THAT TELL A STORY</p><h1>Ordinary spaces,<br /><span>painted with joy.</span></h1><p className="lead">I’m Shady, a mural artist transforming cafés and nurseries into colourful spaces people remember.</p><div className="hero-actions"><a className="paint-button" href="#work">Explore the work <span>↓</span></a><a href="#contact">Start a project</a></div></div><div className="hero-art"><div className="sun" /><div className="canvas"><div className="paint-stroke stroke-1" /><div className="paint-stroke stroke-2" /><div className="paint-stroke stroke-3" /><span>ART<br />IS<br />JOY</span></div><div className="brush">🖌️</div><div className="dot dot1" /><div className="dot dot2" /></div></section><section className="intro"><div><h2>Art with a personality<br />made for the place.</h2></div><p>From the first sketch to the final brushstroke, every project is made to feel right for its space, its people, and its story.</p><div className="chips"><span>Cafés</span><span>Nurseries</span></div></section><section className="portfolio" id="work"><div className="section-title"><div><p className="eyebrow">SELECTED WORK</p><h2>Every wall has a story.</h2></div><p>Choose a category or open a project to see the full collection.</p></div><div className="filters">{['All', 'Cafes', 'Nurseries'].map(x => <button key={x} className={category === x ? 'selected' : ''} onClick={() => setCategory(x)}>{x === 'All' ? 'All work' : x === 'Cafes' ? 'Cafés' : 'Nurseries'}</button>)}</div><div className="gallery-grid">{shown.map((p, i) => <button className={'work work-' + i % 4} key={p.id} onClick={() => setOpen(p)}><img src={p.images[0]} alt={p.title} /><span className="work-info"><small>{p.category}</small><strong>{p.title}</strong><i>View collection ↗</i></span></button>)}</div>{!shown.length && <p className="empty">No projects in this category yet.</p>}</section><section className="contact" id="contact"><div className="scribble"></div><p className="eyebrow">READY TO COLOUR YOUR SPACE?</p><h2>Let your walls<br /><span>tell your story.</span></h2>{data.contacts.whatsapp ? <a className="paint-button" href={data.contacts.whatsapp} target="_blank" rel="noreferrer">Talk on WhatsApp <span>↗</span></a> : <p className="contact-note">Contact details will be added soon.</p>}<ContactLinks contacts={data.contacts} /></section>{open && <Collection project={open} projects={data.projects.filter(p => p.category === open.category)} onClose={() => setOpen(null)} />}</main> }
-function Dashboard({ data, setData }) { const [signed, setSigned] = useState(() => sessionStorage.getItem(SESSION) === 'true'), [creds, setCreds] = useState({ email: '', password: '' }), [error, setError] = useState(''), [notice, setNotice] = useState(''), [form, setForm] = useState({ title: '', category: 'Cafes', description: '', images: [] }); const login = e => { e.preventDefault(); if (creds.email === ADMIN_EMAIL && creds.password === ADMIN_PASSWORD) { sessionStorage.setItem(SESSION, 'true'); setSigned(true) } else setError('Incorrect email or password.') }; const add = async e => { e.preventDefault(); if (!form.images.length) return setNotice('Please select at least one project image.'); setData({ ...data, projects: [{ ...form, id: Date.now() }, ...data.projects] }); setForm({ title: '', category: 'Cafes', description: '', images: [] }); setNotice('Project published on the website.') }; const updateContact = (key, value) => setData({ ...data, contacts: { ...data.contacts, [key]: value } }); if (!signed) return <main className="dashboard-shell"><section className="login-card"><a className="brand dashboard-brand" href="/"><span className="brand-mark">S</span><span>SHADY <i>PRIVATE DASHBOARD</i></span></a><p className="eyebrow">PRIVATE ACCESS</p><h1>Sign in to manage the portfolio.</h1><form onSubmit={login}><label>Email<input type="email" required value={creds.email} onChange={e => setCreds({ ...creds, email: e.target.value })} /></label><label>Password<input type="password" required value={creds.password} onChange={e => setCreds({ ...creds, password: e.target.value })} /></label>{error && <p className="error">{error}</p>}<button className="paint-button">Sign in <span>→</span></button></form></section></main>; return <main className="dashboard-shell"><header className="dashboard-header"><a className="brand" href="/"><span className="brand-mark">S</span><span>SHADY <i>PRIVATE DASHBOARD</i></span></a><button className="small-link" onClick={() => { sessionStorage.removeItem(SESSION); setSigned(false) }}>Sign out</button></header><section className="dashboard"><p className="eyebrow">PORTFOLIO MANAGER</p><h1>Update your work and contact links.</h1><p className="dashboard-lead">Projects and links are saved instantly in this browser and appear on the public website.</p>{notice && <p className="notice">{notice}</p>}<div className="dashboard-grid"><form className="dashboard-card" onSubmit={add}><h2>Add a project</h2><label>Project title<input required value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} placeholder="e.g. Little Explorers Nursery" /></label><label>Category<select value={form.category} onChange={e => setForm({ ...form, category: e.target.value })}><option>Cafes</option><option>Nurseries</option></select></label><label>Description<textarea required value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} placeholder="Describe the artwork and the space." /></label><label>Project photos<input type="file" accept="image/*" multiple required onChange={async e => setForm({ ...form, images: await filesToData(e.target.files) })} /><small>Select multiple photos for one project.</small></label>{form.images.length > 0 && <p className="image-count">{form.images.length} image(s) ready</p>}<button className="paint-button">Publish project <span>✦</span></button></form><section className="dashboard-card"><h2>Contact links</h2>{[['whatsapp', 'WhatsApp URL', 'https://wa.me/201...', 'url'], ['instagram', 'Instagram · Shady', 'https://instagram.com/shady.gad33', 'url'], ['facebook', 'Facebook · Shady', 'https://facebook.com/shady.gad.98', 'url'], ['instagramArtVision', 'Instagram · Art Vision', 'https://instagram.com/art__vision.eg', 'url'], ['facebookArtVision', 'Facebook · Art Vision', 'https://facebook.com/...', 'url'], ['email', 'Business email', 'hello@example.com', 'email']].map(([key, label, placeholder, type]) => <label key={key}>{label}<input type={type} value={data.contacts[key] || ''} onChange={e => updateContact(key, e.target.value)} placeholder={placeholder} /></label>)}<p className="image-count">Links save automatically.</p></section></div><section className="dashboard-card projects-list"><h2>Published projects</h2>{data.projects.map(p => <article key={p.id}><img src={p.images[0]} alt="" /><div><small>{p.category}</small><b>{p.title}</b><span>{p.images.length} photo(s)</span></div><button onClick={() => setData({ ...data, projects: data.projects.filter(x => x.id !== p.id) })}>Remove</button></article>)}</section></section></main> }
 export default function App() {
-  const [data, setData] = useState(getData)
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      try {
-        localStorage.setItem(STORE, JSON.stringify(data))
-      } catch (err) {
-        console.error('Failed to save data to localStorage:', err)
-      }
-    }, 400)
-    return () => clearTimeout(timer)
-  }, [data])
-
-  return window.location.pathname.replace(/\/$/, '') === DASH
-    ? <Dashboard data={data} setData={setData} />
-    : <PublicSite data={data} />
+  return (
+    <BrowserRouter>
+      <PortfolioProvider>
+        <Routes>
+          <Route path="/shady-dashboard" element={<Dashboard />} />
+          <Route
+            path="/art"
+            element={
+              <PublicLayout>
+                <ArtGallery />
+              </PublicLayout>
+            }
+          />
+          <Route
+            path="/"
+            element={
+              <PublicLayout>
+                <Home />
+              </PublicLayout>
+            }
+          />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </PortfolioProvider>
+    </BrowserRouter>
+  )
 }
