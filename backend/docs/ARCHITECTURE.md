@@ -1,4 +1,4 @@
-# Shady Backend — Architecture (Step 1: structure + schema)
+# Shady Backend — Architecture
 
 Java 17 · Spring Boot 3.x · Maven · PostgreSQL 16 · Flyway · Caffeine · Spring Security (JWT + rotating refresh cookie)
 
@@ -19,7 +19,7 @@ Shady_site/
     ├── .gitleaks.toml / .pre-commit-config.yaml
     ├── docs/ARCHITECTURE.md
     └── src/
-        ├── main/java/com/shady/
+        ├── main/java/com/shady/landing/
         │   ├── ShadyApplication.java
         │   │
         │   ├── common/                        # shared infrastructure (no business logic)
@@ -32,8 +32,9 @@ Shady_site/
         │   │   ├── slug/                      # SlugGenerator (from English name, uniqueness suffix)
         │   │   └── mail/                      # EmailService (interface), LoggingEmailService (no-op default)
         │   │
-        │   ├── security/                      # SecurityConfig (deny-by-default chain), JwtService, JwtAuthenticationFilter,
-        │   │                                  # CorsConfig, SecurityHeaders (HSTS/CSP/nosniff/frame-deny), CsrfConfig (cookie endpoints only)
+        │   ├── security/                      # SecurityConfig (deny-by-default chain, CORS, headers), JwtConfig (Nimbus HS256
+        │   │                                  # encoder/decoder + revocation validator), AccessTokenService, CsrfConfig, CurrentAdmin,
+        │   │                                  # RestAuthenticationEntryPoint / RestAccessDeniedHandler (JSON 401/403)
         │   │
         │   ├── auth/                          # admin-only authentication
         │   │   ├── AdminUser, AdminUserRepository
@@ -69,8 +70,12 @@ Shady_site/
         │   │
         │   ├── event/
         │   │   ├── Event, EventImage, EventStatus, LocationType, EventRepository, EventService, EventMapper
-        │   │   ├── EventEndingScheduler       # marks PUBLISHED events as ENDED once they are over (idempotent)
         │   │   ├── web/PublicEventController, web/AdminEventController
+        │   │   └── dto/
+        │   │
+        │   ├── project/                       # portfolio projects (murals, café / nursery work)
+        │   │   ├── Project, ProjectImage, ProjectRepository, ProjectService, ProjectMapper
+        │   │   ├── web/PublicProjectController, web/AdminProjectController
         │   │   └── dto/
         │   │
         │   ├── content/                       # hero / about / gallery / footer sections
@@ -95,7 +100,7 @@ Shady_site/
         ├── main/resources/
         │   ├── application.yml, application-dev.yml, application-test.yml, application-prod.yml
         │   └── db/migration/V1__init_schema.sql
-        └── test/java/com/shady/
+        └── test/java/com/shady/landing/
             ├── <module>/..ServiceTest          # unit tests (Mockito)
             ├── support/IntegrationTest         # @SpringBootTest + Testcontainers PostgreSQL base class
             └── it/  AdminEndpointsSecurityIT, PublicVisibilityIT, MediaUploadIT, AuthFlowIT, ...
@@ -115,6 +120,8 @@ Every list endpoint is paginated: `?page=0&size=20` (size capped at 50) and retu
 | GET | `/api/v1/public/categories` | ordered by `display_order` |
 | GET | `/api/v1/public/events?when=upcoming\|past` | upcoming: start asc; past: start desc; never DRAFT |
 | GET | `/api/v1/public/events/{slug}` | PUBLISHED or ENDED only |
+| GET | `/api/v1/public/projects?featured=true` | published only; newest project date first |
+| GET | `/api/v1/public/projects/{slug}` | 404 if unpublished |
 | GET | `/api/v1/public/content` | all sections (hero, about, gallery, footer) |
 | GET | `/api/v1/public/contact` | `{ whatsappNumber, instagramUsername, socialLinks[] }` |
 | POST | `/api/v1/public/clicks` | `{ itemType, itemId, channel }` → 204; rate-limited, no personal data |
@@ -135,6 +142,7 @@ Every list endpoint is paginated: `?page=0&size=20` (size capped at 50) and retu
 | products | `GET/POST /admin/products`, `GET/PUT/DELETE /admin/products/{id}`, `PUT /admin/products/{id}/images` (ordered media ids) |
 | categories | `GET/POST /admin/categories`, `GET/PUT/DELETE /admin/categories/{id}` |
 | events | `GET/POST /admin/events`, `GET/PUT/DELETE /admin/events/{id}`, `PUT /admin/events/{id}/images` |
+| projects | `GET/POST /admin/projects`, `GET/PUT/DELETE /admin/projects/{id}`, `PUT /admin/projects/{id}/images` |
 | content | `GET /admin/content`, `PUT /admin/content/{sectionKey}` |
 | contact | `GET/PUT /admin/contact` |
 | media | `POST /admin/media` (multipart, rate-limited), `DELETE /admin/media/{id}` (409 if in use) |
@@ -142,6 +150,7 @@ Every list endpoint is paginated: `?page=0&size=20` (size capped at 50) and retu
 | audit | `GET /admin/audit-log` |
 
 (All admin paths are prefixed `/api/v1`.) Any write evicts the relevant cache entries.
+Admin and auth responses always carry `Cache-Control: no-store`; only public GETs are cacheable.
 
 ## 3. Key design decisions
 
@@ -154,5 +163,17 @@ Every list endpoint is paginated: `?page=0&size=20` (size capped at 50) and retu
 - **Refresh tokens**: 256-bit random value. Only its SHA-256 is stored (a slow hash isn't needed for high-entropy tokens). Each rotation stays in the same `family_id`, so reusing an already-rotated token revokes the whole family.
 - **Lockout**: the counter and `locked_until` live in the DB, so they survive restarts. Bucket4j adds per-IP rate limiting in front.
 - **Clicks**: aggregated per day (`item, channel, day → count`) through an upsert. No IP, user agent or timestamp per click is stored.
-- **Events "past"**: an event is past when `COALESCE(ends_at, starts_at) < now()`. A scheduler also flips `PUBLISHED → ENDED`, so the admin UI shows the true status.
+- **Event status**: only `DRAFT` / `PUBLISHED` are stored. `ENDED` is computed: a published event whose `COALESCE(ends_at, starts_at) < now()` is returned with `status: ENDED` and listed under `when=past`.
+- **Domains & cookies**: frontend `https://shady.com`, API `https://api.shady.com` (same site). The refresh cookie is `HttpOnly; Secure; SameSite=Strict; Path=/api/v1/auth` on the API host only. The CSRF cookie `XSRF-TOKEN` (`Secure; SameSite=Strict; Domain=shady.com`, readable by JS) is echoed back by the frontend in the `X-XSRF-TOKEN` header on `/auth/refresh` and `/auth/logout` (double-submit). The frontend calls the API with `credentials: 'include'`.
+- **Access tokens**: HS256 JWT (15 min) issued and validated by Spring Security's resource-server support. Tokens issued before the last password change are rejected.
+- **Email**: `EmailService` interface, with a logging implementation for now (ready for Brevo/Resend). It sends an alert to the admin when the account gets locked out, after commit and asynchronously.
+- **Deleting**: hard delete. Image files are removed once nothing references them. The published flag is how items are hidden.
 - **Audit log**: append-only and written in the same transaction as the admin change. Login attempts record the IP (a legitimate security interest, and it's the admin's own traffic plus attackers).
+
+## 4. Open items (tracked for later steps)
+
+- **CDN + CORS**: Cloudflare doesn't vary its cache on `Origin`. A public response cached from a request without
+  `Origin` could be served to the browser without `Access-Control-Allow-Origin`. This will be solved in the
+  public-endpoints step, either with an explicit ACAO on public GETs or a Cloudflare cache-key rule.
+- **Rate limiting** is per instance (in-memory Bucket4j). That's fine for a single instance; move it to Redis
+  if the app is scaled out.
