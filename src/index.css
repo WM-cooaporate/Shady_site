@@ -328,6 +328,8 @@ nav a:hover {
     animation: logoFloat 6s ease-in-out infinite;
     will-change: transform;
     user-select: none;
+    mix-blend-mode: multiply;
+    /* ← السطر الجديد */
 }
 
 
