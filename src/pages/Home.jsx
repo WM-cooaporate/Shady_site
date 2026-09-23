@@ -313,7 +313,7 @@ export default function Home() {
             fontFamily: "'DM Mono'",
           }}
         >
-          © {new Date().getFullYear()} Art Vision · Founded by Shady Gad
+          © {new Date().getFullYear()} Art Vision · Founded by WM_Solutions
         </p>
       </section>
 
