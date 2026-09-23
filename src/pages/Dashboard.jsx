@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import { filesToData } from '../utils/filesToData'
 import { usePortfolio } from '../context/PortfolioContext'
-
+import { Helmet } from 'react-helmet-async'
 export default function Dashboard() {
   const { signed, error, login, logout } = useAuth()
   const { data, setData } = usePortfolio()
@@ -227,6 +227,11 @@ export default function Dashboard() {
   if (!signed) {
     return (
       <main className="dashboard-shell">
+         <Helmet>
+        <title>Sign In · Art Vision Dashboard</title>
+        <meta name="robots" content="noindex, nofollow" />
+        <meta name="googlebot" content="noindex, nofollow" />
+      </Helmet>
         <section className="login-card">
           <Link className="brand dashboard-brand" to="/">
             <span className="brand-mark">A</span>
@@ -267,6 +272,11 @@ export default function Dashboard() {
   // ───────── Dashboard Screen ─────────
   return (
     <main className="dashboard-shell">
+      <Helmet>
+      <title>Dashboard · Art Vision</title>
+      <meta name="robots" content="noindex, nofollow" />
+      <meta name="googlebot" content="noindex, nofollow" />
+    </Helmet>
       <header className="dashboard-header">
         <Link className="brand" to="/">
           <span className="brand-mark">A</span>

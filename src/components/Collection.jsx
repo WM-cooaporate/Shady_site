@@ -202,19 +202,20 @@ export default function Collection({ project, projects, onClose }) {
               onWheel={onWheel}
               onClick={handleStageClick}
             >
-              <img
-                src={currentImage}
-                alt={`${active.title} ${imageIndex + 1}`}
-                draggable={false}
-                style={{
-                  transform: `translate(${position.x}px, ${position.y}px) scale(${scale})`,
-                  cursor: isZoomed
-                    ? dragging.current
-                      ? 'grabbing'
-                      : 'grab'
-                    : 'zoom-in',
-                }}
-              />
+             <img
+  src={currentImage}
+  alt={`${active.title} — image ${imageIndex + 1} of ${total}`}
+  draggable={false}
+  decoding="async"
+  style={{
+    transform: `translate(${position.x}px, ${position.y}px) scale(${scale})`,
+    cursor: isZoomed
+      ? dragging.current
+        ? 'grabbing'
+        : 'grab'
+      : 'zoom-in',
+  }}
+/>
 
               {/* Prev / Next — تختفي عند الـ zoom */}
               {total > 1 && !isZoomed && (

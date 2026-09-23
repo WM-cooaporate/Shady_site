@@ -1,0 +1,15 @@
+# ═══════════════════════════════════════
+# Art Vision · robots.txt
+# ═══════════════════════════════════════
+
+User-agent: *
+Allow: /
+Disallow: /shady-dashboard
+Disallow: /shady-dashboard/
+
+# Block common bot traps
+Disallow: /*?*utm_
+Disallow: /*?*fbclid=
+
+# Sitemap location
+Sitemap: https://artvision.eg/sitemap.xml

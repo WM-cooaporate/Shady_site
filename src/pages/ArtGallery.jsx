@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { usePortfolio } from '../context/PortfolioContext'
 import Collection from '../components/Collection'
 import ContactLinks from '../components/ContactLinks'
-
+import { Helmet } from 'react-helmet-async'
 const WHATSAPP = 'https://wa.me/201201200208'
 
 export default function ArtGallery() {
@@ -14,6 +14,15 @@ export default function ArtGallery() {
 
   return (
     <main>
+      <Helmet>
+  <title>Art Gallery · Murals & Wall Art | Art Vision</title>
+  <meta name="description" content="Explore Art Vision's collection of murals and wall art for cafés, nurseries, and public spaces. Each project tells a story, painted with care by Shady Gad." />
+  <link rel="canonical" href="https://artvision.eg/art" />
+  <meta property="og:title" content="Art Gallery · Murals & Wall Art | Art Vision" />
+  <meta property="og:description" content="Every wall has a story. Explore our collection of murals and wall art." />
+  <meta property="og:url" content="https://artvision.eg/art" />
+  <meta property="og:type" content="website" />
+</Helmet>
       {/* ───────── Header ───────── */}<header className="topbar">
   <Link className="brand" to="/">
     <span className="brand-mark">A</span>
@@ -80,8 +89,14 @@ export default function ArtGallery() {
                 key={p.id}
                 onClick={() => setOpen(p)}
               >
-                <img src={p.images[0]} alt={p.title} />
-                <span className="work-info">
+<img
+  src={p.images[0]}
+  alt={`${p.title} — mural collection by Art Vision`}
+  loading={i < 4 ? 'eager' : 'lazy'}
+  decoding="async"
+  width="400"
+  height="385"
+/>                <span className="work-info">
                   <small>ART</small>
                   <strong>{p.title}</strong>
                   <i>View collection ↗</i>

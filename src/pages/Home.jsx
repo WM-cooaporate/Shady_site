@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { usePortfolio } from '../context/PortfolioContext'
 import ContactLinks from '../components/ContactLinks'
-
+import { Helmet } from 'react-helmet-async'
 const WHATSAPP = 'https://wa.me/201201200208'
 
 export default function Home() {
@@ -121,6 +121,15 @@ export default function Home() {
 
   return (
     <main>
+      <Helmet>
+  <title>Art Vision · Murals & Events | Shady Gad</title>
+  <meta name="description" content="Creative studio painting cafés, nurseries, and public spaces with colourful murals. Founded by Shady Gad in Egypt. Explore events, products, and custom art." />
+  <link rel="canonical" href="https://artvision.eg/" />
+  <meta property="og:title" content="Art Vision · Murals & Events" />
+  <meta property="og:description" content="Colourful walls, made with heart. Murals, events, and art for cafés, nurseries, and public spaces." />
+  <meta property="og:url" content="https://artvision.eg/" />
+  <meta property="og:type" content="website" />
+</Helmet>
           {/* Floating paint drops background */}
     <div className="paint-drops-bg" aria-hidden="true">
       <span className="paint-drop pd1" />
@@ -278,7 +287,14 @@ export default function Home() {
               to="/art"
               style={{ textDecoration: 'none', display: 'block' }}
             >
-              <img src={p.images[0]} alt={p.title} />
+             <img
+  src={p.images[0]}
+  alt={`${p.title} — mural by Art Vision`}
+  loading={i === 0 ? 'eager' : 'lazy'}
+  decoding="async"
+  width="400"
+  height="385"
+/>
               <span className="work-info">
                 <small>ART</small>
                 <strong>{p.title}</strong>
