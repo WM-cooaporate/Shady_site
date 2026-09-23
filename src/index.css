@@ -2110,3 +2110,77 @@ section {
     font-size: 20px;
     font-weight: 800;
 }
+
+
+/* ═══════════════════════════════════════
+   INSTAGRAM COPY HINT
+   ═══════════════════════════════════════ */
+
+.instagram-hint {
+    background: #F0FDF4;
+    border: 1px solid #86EFAC;
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-top: 10px;
+    display: grid;
+    gap: 8px;
+    animation: hintSlideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes hintSlideIn {
+    0% {
+        opacity: 0;
+        transform: translateY(-8px) scale(0.96);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.hint-title {
+    font-size: 14px;
+    font-weight: 800;
+    color: #15803D;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.hint-text {
+    font-size: 13px;
+    color: #1F2A44;
+    line-height: 1.6;
+}
+
+.hint-text b {
+    color: #D9891B;
+    font-weight: 800;
+}
+
+.hint-keys {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 16px;
+    padding-top: 8px;
+    border-top: 1px dashed #86EFAC;
+    font-size: 12px;
+    color: #5A6377;
+}
+
+.hint-keys span {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.hint-keys b {
+    background: #fff;
+    border: 1px solid #86EFAC;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: #15803D;
+    font-weight: 700;
+}
