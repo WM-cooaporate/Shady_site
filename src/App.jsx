@@ -5,7 +5,7 @@ import { useScrollReveal } from './hooks/useScrollReveal'
 
 import Home from './pages/Home'
 import ArtGallery from './pages/ArtGallery'
-import Dashboard from './pages/Dashboard'
+import Dashboard from './pages/dashboard'
 import SiteNav from './components/SiteNav'
 import NotFound from './components/NotFound'
 
