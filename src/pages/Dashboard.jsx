@@ -4,6 +4,7 @@ import { useAuth } from '../hooks/useAuth'
 import { filesToData } from '../utils/filesToData'
 import { usePortfolio } from '../context/PortfolioContext'
 import { Helmet } from 'react-helmet-async'
+
 export default function Dashboard() {
   const { signed, error, login, logout } = useAuth()
   const { data, setData } = usePortfolio()
@@ -26,6 +27,7 @@ export default function Dashboard() {
     description: '',
     action: '',
     image: '',
+    price: '',
     _file: null,
   }
   const [offerForm, setOfferForm] = useState(emptyOffer)
@@ -109,7 +111,6 @@ export default function Dashboard() {
       _files: null,
     })
     setNotice('')
-    // scroll للفورم
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
@@ -150,6 +151,7 @@ export default function Dashboard() {
             description: offerForm.description,
             action: offerForm.action,
             image: base64Image,
+            price: offerForm.price ? Number(offerForm.price) : null,
           },
           ...(data.offers || []),
         ],
@@ -181,6 +183,7 @@ export default function Dashboard() {
               description: offerForm.description,
               action: offerForm.action,
               image: newImage || o.image,
+              price: offerForm.price ? Number(offerForm.price) : null,
             }
           : o
       ),
@@ -199,6 +202,7 @@ export default function Dashboard() {
       description: o.description,
       action: o.action,
       image: o.image,
+      price: o.price || '',
       _file: null,
     })
     setNotice('')
@@ -227,11 +231,11 @@ export default function Dashboard() {
   if (!signed) {
     return (
       <main className="dashboard-shell">
-         <Helmet>
-        <title>Sign In · Art Vision Dashboard</title>
-        <meta name="robots" content="noindex, nofollow" />
-        <meta name="googlebot" content="noindex, nofollow" />
-      </Helmet>
+        <Helmet>
+          <title>Sign In · Art Vision Dashboard</title>
+          <meta name="robots" content="noindex, nofollow" />
+          <meta name="googlebot" content="noindex, nofollow" />
+        </Helmet>
         <section className="login-card">
           <Link className="brand dashboard-brand" to="/">
             <span className="brand-mark">A</span>
@@ -273,10 +277,10 @@ export default function Dashboard() {
   return (
     <main className="dashboard-shell">
       <Helmet>
-      <title>Dashboard · Art Vision</title>
-      <meta name="robots" content="noindex, nofollow" />
-      <meta name="googlebot" content="noindex, nofollow" />
-    </Helmet>
+        <title>Dashboard · Art Vision</title>
+        <meta name="robots" content="noindex, nofollow" />
+        <meta name="googlebot" content="noindex, nofollow" />
+      </Helmet>
       <header className="dashboard-header">
         <Link className="brand" to="/">
           <span className="brand-mark">A</span>
@@ -471,6 +475,20 @@ export default function Dashboard() {
               <small>One image for each offer.</small>
             </label>
 
+            <label>
+              Price (optional) — EGP
+              <input
+                type="number"
+                min="0"
+                step="1"
+                value={offerForm.price}
+                onChange={e =>
+                  setOfferForm({ ...offerForm, price: e.target.value })
+                }
+                placeholder="e.g. 100 (leave empty if no price)"
+              />
+            </label>
+
             {offerForm._file && (
               <p className="image-count">New image selected</p>
             )}
@@ -565,7 +583,10 @@ export default function Dashboard() {
               <div>
                 <small>{o.type}</small>
                 <b>{o.title}</b>
-                <span>{o.action}</span>
+                <span>
+                  {o.action}
+                  {o.price ? ` · ${o.price} EGP` : ''}
+                </span>
               </div>
               <button
                 className="edit-btn"

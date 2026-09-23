@@ -49,6 +49,7 @@ export const seed = {
             description: 'A relaxed day of colour, painting, and creative conversation with our team.',
             action: 'Reserve a place',
             image: 'https://images.unsplash.com/photo-1513364776144-60967b0f800f?auto=format&fit=crop&w=1200&q=85',
+            price: 250,
         },
         {
             id: 102,
@@ -57,6 +58,7 @@ export const seed = {
             description: 'A made-to-order art print designed to bring a little colour into your space.',
             action: 'Order now',
             image: 'https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?auto=format&fit=crop&w=1200&q=85',
+            price: 100,
         },
     ],
 }

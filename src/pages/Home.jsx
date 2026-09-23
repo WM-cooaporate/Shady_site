@@ -85,12 +85,40 @@ export default function Home() {
     setCopied(false)
   }
 
+  // ───────── Price Calculation ─────────
+  const unitPrice = selected?.price || 0
+  const quantity = Number(details.quantity) || 0
+  const totalPrice = unitPrice * quantity
+
   // ───────── Message ─────────
+   // ───────── Message ─────────
   const message =
     selected && isValid
-      ? `New ${selected.type} request\n${selected.title}\n\nName: ${details.name}\nPhone: ${details.phone}\nQuantity / attendees: ${details.quantity}\nPlace / delivery location: ${details.place}`
-      : ''
+      ? `🎨 *NEW ${selected.type.toUpperCase()} REQUEST*
+━━━━━━━━━━━━━━━━━━━━━
 
+📦 *${selected.title}*
+${selected.description}
+
+👤 *CUSTOMER DETAILS*
+━━━━━━━━━━━━━━━━━━━━━
+Name: ${details.name}
+Phone: ${details.phone}
+Place: ${details.place}
+
+📋 *ORDER DETAILS*
+━━━━━━━━━━━━━━━━━━━━━
+Quantity / attendees: ${details.quantity}${unitPrice ? `
+
+💰 *PRICE BREAKDOWN*
+━━━━━━━━━━━━━━━━━━━━━
+Unit price: ${unitPrice} EGP
+Quantity: ${quantity}
+*TOTAL: ${totalPrice} EGP*` : ''}
+
+━━━━━━━━━━━━━━━━━━━━━
+📩 Sent from Art Vision Website`
+      : ''
   const handleWhatsApp = e => {
     if (!validateAll()) {
       e.preventDefault()
@@ -122,22 +150,24 @@ export default function Home() {
   return (
     <main>
       <Helmet>
-  <title>Art Vision · Murals & Events | Shady Gad</title>
-  <meta name="description" content="Creative studio painting cafés, nurseries, and public spaces with colourful murals. Founded by Shady Gad in Egypt. Explore events, products, and custom art." />
-  <link rel="canonical" href="https://artvision.eg/" />
-  <meta property="og:title" content="Art Vision · Murals & Events" />
-  <meta property="og:description" content="Colourful walls, made with heart. Murals, events, and art for cafés, nurseries, and public spaces." />
-  <meta property="og:url" content="https://artvision.eg/" />
-  <meta property="og:type" content="website" />
-</Helmet>
-          {/* Floating paint drops background */}
-    <div className="paint-drops-bg" aria-hidden="true">
-      <span className="paint-drop pd1" />
-      <span className="paint-drop pd2" />
-      <span className="paint-drop pd3" />
-      <span className="paint-drop pd4" />
-      <span className="paint-drop pd5" />
-    </div>
+        <title>Art Vision · Murals & Events | Shady Gad</title>
+        <meta name="description" content="Creative studio painting cafés, nurseries, and public spaces with colourful murals. Founded by Shady Gad in Egypt. Explore events, products, and custom art." />
+        <link rel="canonical" href="https://artvision.eg/" />
+        <meta property="og:title" content="Art Vision · Murals & Events" />
+        <meta property="og:description" content="Colourful walls, made with heart. Murals, events, and art for cafés, nurseries, and public spaces." />
+        <meta property="og:url" content="https://artvision.eg/" />
+        <meta property="og:type" content="website" />
+      </Helmet>
+
+      {/* Floating paint drops background */}
+      <div className="paint-drops-bg" aria-hidden="true">
+        <span className="paint-drop pd1" />
+        <span className="paint-drop pd2" />
+        <span className="paint-drop pd3" />
+        <span className="paint-drop pd4" />
+        <span className="paint-drop pd5" />
+      </div>
+
       {/* ───────── Header ───────── */}
       <header className="topbar">
         <Link className="brand" to="/">
@@ -155,25 +185,23 @@ export default function Home() {
       </header>
 
       {/* ───────── Hero ───────── */}
-      
-        <section className="hero">
-  <span className="splatter" style={{ 
-    top: '15%', left: '5%', 
-    width: 60, height: 60, 
-    background: '#F5A623', opacity: 0.15 
-  }} />
-  <span className="splatter" style={{ 
-    bottom: '20%', right: '8%', 
-    width: 90, height: 90, 
-    background: '#2C3E5C', opacity: 0.12 
-  }} />
-  <span className="splatter" style={{ 
-    top: '60%', left: '45%', 
-    width: 40, height: 40, 
-    background: '#F5A623', opacity: 0.2 
-  }} />
+      <section className="hero">
+        <span className="splatter" style={{
+          top: '15%', left: '5%',
+          width: 60, height: 60,
+          background: '#F5A623', opacity: 0.15
+        }} />
+        <span className="splatter" style={{
+          bottom: '20%', right: '8%',
+          width: 90, height: 90,
+          background: '#2C3E5C', opacity: 0.12
+        }} />
+        <span className="splatter" style={{
+          top: '60%', left: '45%',
+          width: 40, height: 40,
+          background: '#F5A623', opacity: 0.2
+        }} />
 
-  <div className="hero-copy"></div>
         <div className="hero-copy">
           <p className="eyebrow">WHERE ART MEETS VISION</p>
           <h1>
@@ -196,14 +224,15 @@ export default function Home() {
         </div>
 
         <div className="hero-art">
-          <div className="sun" />
-          <div className="canvas">
-            <div className="paint-stroke stroke-1" />
-            <div className="paint-stroke stroke-2" />
-            <div className="paint-stroke stroke-3" />
-            
+          <div className="logo-glow" />
+          <div className="logo-showcase">
+            <img
+              src="/Logo.png"
+              alt="Art Vision Logo"
+              className="hero-logo"
+              draggable={false}
+            />
           </div>
-          <div className="brush">🖌️</div>
           <div className="dot dot1" />
           <div className="dot dot2" />
         </div>
@@ -255,6 +284,9 @@ export default function Home() {
                 <small>{item.type}</small>
                 <h2>{item.title}</h2>
                 <p>{item.description}</p>
+                {item.price > 0 && (
+                  <p className="offer-price">{item.price} EGP</p>
+                )}
                 <button
                   className="paint-button"
                   onClick={() => handleOpenModal(item)}
@@ -287,14 +319,14 @@ export default function Home() {
               to="/art"
               style={{ textDecoration: 'none', display: 'block' }}
             >
-             <img
-  src={p.images[0]}
-  alt={`${p.title} — mural by Art Vision`}
-  loading={i === 0 ? 'eager' : 'lazy'}
-  decoding="async"
-  width="400"
-  height="385"
-/>
+              <img
+                src={p.images[0]}
+                alt={`${p.title} — mural by Art Vision`}
+                loading={i === 0 ? 'eager' : 'lazy'}
+                decoding="async"
+                width="400"
+                height="385"
+              />
               <span className="work-info">
                 <small>ART</small>
                 <strong>{p.title}</strong>
@@ -377,6 +409,23 @@ export default function Home() {
                 )}
               </label>
             ))}
+
+            {selected.price > 0 && (
+              <div className="price-summary">
+                <div className="price-row">
+                  <span>Unit price</span>
+                  <b>{selected.price} EGP</b>
+                </div>
+                <div className="price-row">
+                  <span>Quantity</span>
+                  <b>× {quantity || 0}</b>
+                </div>
+                <div className="price-row total">
+                  <span>Total</span>
+                  <b>{totalPrice} EGP</b>
+                </div>
+              </div>
+            )}
 
             <div className="send-actions">
               <a
