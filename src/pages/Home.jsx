@@ -92,32 +92,17 @@ export default function Home() {
 
   // ───────── Message ─────────
    // ───────── Message ─────────
+    // ───────── Message ─────────
   const message =
     selected && isValid
-      ? `🎨 *NEW ${selected.type.toUpperCase()} REQUEST*
-━━━━━━━━━━━━━━━━━━━━━
+      ? `New ${selected.type} request
+${selected.title}
 
-📦 *${selected.title}*
-${selected.description}
-
-👤 *CUSTOMER DETAILS*
-━━━━━━━━━━━━━━━━━━━━━
 Name: ${details.name}
 Phone: ${details.phone}
-Place: ${details.place}
-
-📋 *ORDER DETAILS*
-━━━━━━━━━━━━━━━━━━━━━
 Quantity / attendees: ${details.quantity}${unitPrice ? `
-
-💰 *PRICE BREAKDOWN*
-━━━━━━━━━━━━━━━━━━━━━
-Unit price: ${unitPrice} EGP
-Quantity: ${quantity}
-*TOTAL: ${totalPrice} EGP*` : ''}
-
-━━━━━━━━━━━━━━━━━━━━━
-📩 Sent from Art Vision Website`
+Total: ${totalPrice} EGP` : ''}
+Place / delivery location: ${details.place}`
       : ''
   const handleWhatsApp = e => {
     if (!validateAll()) {
