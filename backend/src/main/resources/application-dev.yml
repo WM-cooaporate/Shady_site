@@ -1,0 +1,11 @@
+# Local development: http://localhost, Vite dev server on :5173.
+app:
+  security:
+    refresh:
+      secure: ${COOKIE_SECURE:false}
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173}
+
+logging:
+  level:
+    com.shady.landing: DEBUG
