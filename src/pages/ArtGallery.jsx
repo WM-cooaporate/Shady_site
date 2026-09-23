@@ -111,7 +111,6 @@ export default function ArtGallery() {
 
       {/* ───────── Contact ───────── */}
       <section className="contact">
-        <div className="scribble">✦</div>
         <p className="eyebrow">WANT A MURAL LIKE THIS?</p>
         <h2>Send a message paint<br /><span>your space.</span></h2>
 
@@ -127,7 +126,7 @@ export default function ArtGallery() {
         <ContactLinks contacts={data.contacts} />
 
         <p style={{ marginTop: 60, fontSize: 11, color: '#ffffff88', fontFamily: "'DM Mono'" }}>
-          © {new Date().getFullYear()} Art Vision · Founded by Shady Gad
+          © {new Date().getFullYear()} Art Vision · Founded by WM_Solutions
         </p>
       </section>
 

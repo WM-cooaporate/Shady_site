@@ -1,11 +1,10 @@
 import imageCompression from 'browser-image-compression'
-
 const compressOptions = {
-    maxSizeMB: 0.5, // 500 KB كحد أقصى لكل صورة
-    maxWidthOrHeight: 1200, // أقصى عرض/طول 1200px
+    maxSizeMB: 0.8, // ← رفعناها من 0.5 لـ 0.8 (جودة أعلى)
+    maxWidthOrHeight: 1920, // ← رفعناها من 1200 لـ 1920
     useWebWorker: true,
+    initialQuality: 0.85, // ← ضمان جودة عالية
 }
-
 async function compressFile(file) {
     try {
         return await imageCompression(file, compressOptions)

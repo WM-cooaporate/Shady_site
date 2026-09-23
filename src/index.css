@@ -1661,12 +1661,14 @@ section {
 .slider-stage {
     position: relative;
     width: 100%;
-    aspect-ratio: 16 / 10;
+    height: 70vh;
+    max-height: 700px;
     background: #1a1a1a;
     border-radius: 8px;
     overflow: hidden;
-    display: grid;
-    place-items: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     user-select: none;
     cursor: zoom-in;
     transition: cursor 0.2s ease;
@@ -1677,15 +1679,19 @@ section {
 }
 
 .slider-stage img {
+    /* ← الأهم: نخلي الصورة تاخد حجمها الطبيعي مع احترام الحدود */
     max-width: 100%;
     max-height: 100%;
     width: auto;
     height: auto;
     object-fit: contain;
+    object-position: center;
+    display: block;
     transition: transform 0.25s ease;
     will-change: transform;
     pointer-events: none;
     transform-origin: center center;
+    /* ← شيلنا zoom: 1 لأنه مش قياسي */
 }
 
 .slider-stage.is-zoom img {
@@ -1879,43 +1885,53 @@ section {
 
 @media (max-width: 760px) {
     .slider-stage {
-        aspect-ratio: 4 / 3;
+        height: 55vh;
+        max-height: 500px;
     }
-    .slider-nav {
-        width: 40px;
-        height: 40px;
-        font-size: 18px;
-    }
-    .slider-nav.prev {
-        left: 8px;
-    }
-    .slider-nav.next {
-        right: 8px;
-    }
-    .slider-counter {
-        top: 10px;
-        left: 10px;
-        font-size: 11px;
-        padding: 4px 10px;
-    }
-    .slider-zoom-controls {
-        top: 10px;
-        right: 10px;
-    }
-    .zoom-btn {
-        width: 34px;
-        height: 34px;
-        font-size: 16px;
-    }
-    .slider-hint {
-        font-size: 10px;
-        padding: 4px 10px;
-        bottom: 10px;
-    }
-    .thumb {
-        flex: 0 0 60px;
-        height: 50px;
-    }
+    /* ... */
+}
+
+.slider-nav {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+}
+
+.slider-nav.prev {
+    left: 8px;
+}
+
+.slider-nav.next {
+    right: 8px;
+}
+
+.slider-counter {
+    top: 10px;
+    left: 10px;
+    font-size: 11px;
+    padding: 4px 10px;
+}
+
+.slider-zoom-controls {
+    top: 10px;
+    right: 10px;
+}
+
+.zoom-btn {
+    width: 34px;
+    height: 34px;
+    font-size: 16px;
+}
+
+.slider-hint {
+    font-size: 10px;
+    padding: 4px 10px;
+    bottom: 10px;
+}
+
+.thumb {
+    flex: 0 0 60px;
+    height: 50px;
 }
 
 
