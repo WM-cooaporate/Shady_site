@@ -109,40 +109,6 @@ Place / delivery location: ${details.place}`
       e.preventDefault()
     }
   }
-  const handleInstagram = async e => {
-    e.preventDefault()
-    if (!validateAll()) return
-
-    let copied = false
-    try {
-      if (navigator.clipboard?.writeText) {
-        await navigator.clipboard.writeText(message)
-        copied = true
-      } else {
-        const ta = document.createElement('textarea')
-        ta.value = message
-        ta.style.position = 'fixed'
-        ta.style.opacity = '0'
-        document.body.appendChild(ta)
-        ta.select()
-        copied = document.execCommand('copy')
-        document.body.removeChild(ta)
-      }
-    } catch {
-      copied = false
-    }
-
-    setCopied(copied)
-
-    if (copied) {
-      // انتظر ثانيتين عشان المستخدم يقرا التنبيه
-      setTimeout(() => {
-        window.open('https://ig.me/m/art__vision.eg', '_blank', 'noreferrer')
-      }, 1500)
-    } else {
-      alert('Could not copy the message. Please contact us on WhatsApp instead.')
-    }
-  }
   return (
     <main>
       <Helmet>
@@ -439,34 +405,9 @@ Place / delivery location: ${details.place}`
                 Send on WhatsApp
               </a>
 
-              <button
-                className={`instagram-button ${!isValid ? 'is-disabled' : ''}`}
-                type="button"
-                onClick={handleInstagram}
-                disabled={!isValid}
-              >
-                Continue on Instagram
-              </button>
-            </div>
-
-            {!isValid && (
-              <p className="form-hint">
-                Please fill all fields correctly to enable the send buttons.
-              </p>
-            )}            {copied && (
-              <div className="instagram-hint" role="status">
-                <div className="hint-title">
-                  ✅ Request copied to clipboard!
-                </div>
-                <div className="hint-text">
-                  Instagram is opening now. In the chat, just <b>paste</b> it:
-                </div>
-                <div className="hint-keys">
-                  <span>💻 Desktop: <b>Ctrl + V</b> / <b>Cmd + V</b></span>
-                  <span>📱 Mobile: <b>long press</b> → <b>Paste</b></span>
-                </div>
+             
               </div>
-            )}
+            
           </form>
         </div>
       )}
