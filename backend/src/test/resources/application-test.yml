@@ -1,0 +1,39 @@
+# Test profile. The datasource is supplied by IntegrationTest (Testcontainers, or SHADY_TEST_DB_URL).
+app:
+  security:
+    jwt:
+      # Test-only key (base64 of 32 bytes). Never used outside tests.
+      secret: dGVzdC1vbmx5LWp3dC1rZXktZG8tbm90LXVzZS0zMmI=
+    refresh:
+      secure: true
+    bcrypt-strength: 4
+    # Lets each test act as a distinct client IP, so rate-limit buckets do not leak between tests.
+    client-ip-header: X-Client-IP
+  admin:
+    email: admin@shady.test
+    initial-password: Initial-Passw0rd!
+  cors:
+    allowed-origins: https://shady.com
+  rate-limits:
+    - name: login
+      method: POST
+      path: /api/v1/auth/login
+      capacity: 10
+      period: 1m
+    - name: refresh
+      method: POST
+      path: /api/v1/auth/refresh
+      capacity: 30
+      period: 1m
+    - name: upload
+      method: POST
+      path: /api/v1/admin/media
+      capacity: 30
+      period: 1m
+    - name: click
+      method: POST
+      path: /api/v1/public/clicks
+      capacity: 20
+      period: 1m
+  jobs:
+    refresh-token-cleanup-cron: "-"

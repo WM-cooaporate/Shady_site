@@ -1,0 +1,116 @@
+# Shared configuration. Every secret and environment-specific value comes from environment variables.
+spring:
+  application:
+    name: shady-backend
+  profiles:
+    default: dev
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/shady}
+    username: ${DB_USERNAME:shady}
+    password: ${DB_PASSWORD:}
+    hikari:
+      maximum-pool-size: ${DB_POOL_SIZE:10}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+  flyway:
+    enabled: true
+  jackson:
+    deserialization:
+      fail-on-unknown-properties: true
+  servlet:
+    multipart:
+      max-file-size: ${UPLOAD_MAX_FILE_SIZE:10MB}
+      max-request-size: ${UPLOAD_MAX_REQUEST_SIZE:11MB}
+  threads:
+    virtual:
+      enabled: false
+
+server:
+  port: ${PORT:8080}
+  shutdown: graceful
+  forward-headers-strategy: ${FORWARD_HEADERS_STRATEGY:none}
+  error:
+    include-message: never
+    include-stacktrace: never
+    include-binding-errors: never
+    whitelabel:
+      enabled: false
+  servlet:
+    session:
+      tracking-modes: []
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never
+      probes:
+        enabled: true
+  info:
+    env:
+      enabled: false
+
+springdoc:
+  api-docs:
+    enabled: ${API_DOCS_ENABLED:true}
+  swagger-ui:
+    enabled: ${API_DOCS_ENABLED:true}
+  packages-to-scan: com.shady.landing
+
+app:
+  security:
+    jwt:
+      secret: ${JWT_SECRET}
+      issuer: ${JWT_ISSUER:https://api.shady.com}
+      access-token-ttl: ${ACCESS_TOKEN_TTL:15m}
+    refresh:
+      ttl: ${REFRESH_TOKEN_TTL:7d}
+      cookie-name: shady_rt
+      cookie-path: /api/v1/auth
+      secure: ${COOKIE_SECURE:true}
+    csrf:
+      cookie-name: XSRF-TOKEN
+      header-name: X-XSRF-TOKEN
+      cookie-domain: ${CSRF_COOKIE_DOMAIN:}
+    lockout:
+      max-attempts: ${LOGIN_MAX_ATTEMPTS:5}
+      duration: ${LOGIN_LOCKOUT_DURATION:15m}
+    bcrypt-strength: ${BCRYPT_STRENGTH:12}
+    client-ip-header: ${CLIENT_IP_HEADER:}
+  admin:
+    email: ${ADMIN_EMAIL:}
+    initial-password: ${ADMIN_INITIAL_PASSWORD:}
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:https://shady.com}
+  mail:
+    provider: ${MAIL_PROVIDER:log}
+  rate-limits:
+    - name: login
+      method: POST
+      path: /api/v1/auth/login
+      capacity: ${RATE_LIMIT_LOGIN_PER_MINUTE:5}
+      period: 1m
+    - name: refresh
+      method: POST
+      path: /api/v1/auth/refresh
+      capacity: 30
+      period: 1m
+    - name: upload
+      method: POST
+      path: /api/v1/admin/media
+      capacity: ${RATE_LIMIT_UPLOADS_PER_MINUTE:30}
+      period: 1m
+    - name: click
+      method: POST
+      path: /api/v1/public/clicks
+      capacity: ${RATE_LIMIT_CLICKS_PER_MINUTE:20}
+      period: 1m

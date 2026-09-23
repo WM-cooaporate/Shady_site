@@ -1,0 +1,21 @@
+# Production: behind Cloudflare (and possibly a load balancer). No API docs.
+server:
+  forward-headers-strategy: ${FORWARD_HEADERS_STRATEGY:native}
+
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
+
+app:
+  security:
+    refresh:
+      secure: true
+    csrf:
+      cookie-domain: ${CSRF_COOKIE_DOMAIN:shady.com}
+    client-ip-header: ${CLIENT_IP_HEADER:CF-Connecting-IP}
+
+logging:
+  level:
+    root: INFO
