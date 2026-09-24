@@ -4,10 +4,11 @@ import { useAuth } from '../hooks/useAuth'
 import { filesToData } from '../utils/filesToData'
 import { usePortfolio } from '../context/PortfolioContext'
 import { Helmet } from 'react-helmet-async'
+import { supabase } from '../lib/supabase'
 
 export default function Dashboard() {
   const { signed, error, login, logout } = useAuth()
-  const { data, setData } = usePortfolio()
+  const { data, setData, meta } = usePortfolio()
 
   // ───────── Login State ─────────
   const [creds, setCreds] = useState({ email: '', password: '' })
@@ -52,54 +53,72 @@ export default function Dashboard() {
     setNotice('Processing images...')
 
     try {
-      const base64Images = await filesToData(form._files)
+      const imageUrls = await filesToData(form._files)
 
-      setData({
-        ...data,
-        artProjects: [
-          {
-            id: Date.now(),
-            title: form.title,
-            description: form.description,
-            images: base64Images,
-          },
-          ...(data.artProjects || []),
-        ],
-      })
+      const { data: inserted, error: insertError } = await supabase
+        .from('art_projects')
+        .insert({
+          title: form.title,
+          description: form.description,
+          images: imageUrls,
+        })
+        .select()
+        .single()
+
+      if (insertError) throw insertError
+
+      // نحدّث الـ state المحلي بدون إعادة تحميل
+      setData(prev => ({
+        ...prev,
+        artProjects: [inserted, ...(prev.artProjects || [])],
+      }))
 
       setForm(emptyProject)
       setNotice('Project published on the website.')
     } catch (err) {
       console.error(err)
-      setNotice('Failed to process images. Try smaller files.')
+      setNotice('Failed to publish project: ' + err.message)
     }
   }
 
   const updateProject = async e => {
     e.preventDefault()
 
-    const newImages =
-      form._files && form._files.length
-        ? await filesToData(form._files)
-        : null
+    try {
+      let imageUrls = null
+      if (form._files && form._files.length) {
+        imageUrls = await filesToData(form._files)
+      }
 
-    setData({
-      ...data,
-      artProjects: (data.artProjects || []).map(p =>
-        p.id === editingProjectId
-          ? {
-              ...p,
-              title: form.title,
-              description: form.description,
-              images: newImages || p.images,
-            }
-          : p
-      ),
-    })
+      const updates = {
+        title: form.title,
+        description: form.description,
+      }
+      if (imageUrls) updates.images = imageUrls
 
-    setForm(emptyProject)
-    setEditingProjectId(null)
-    setNotice('Project updated successfully.')
+      const { data: updated, error: updateError } = await supabase
+        .from('art_projects')
+        .update(updates)
+        .eq('id', editingProjectId)
+        .select()
+        .single()
+
+      if (updateError) throw updateError
+
+      setData(prev => ({
+        ...prev,
+        artProjects: (prev.artProjects || []).map(p =>
+          p.id === editingProjectId ? updated : p
+        ),
+      }))
+
+      setForm(emptyProject)
+      setEditingProjectId(null)
+      setNotice('Project updated successfully.')
+    } catch (err) {
+      console.error(err)
+      setNotice('Failed to update project: ' + err.message)
+    }
   }
 
   const startEditProject = p => {
@@ -119,11 +138,25 @@ export default function Dashboard() {
     setForm(emptyProject)
   }
 
-  const removeProject = id => {
-    setData({
-      ...data,
-      artProjects: (data.artProjects || []).filter(x => x.id !== id),
-    })
+  const removeProject = async id => {
+    try {
+      const { error: delError } = await supabase
+        .from('art_projects')
+        .delete()
+        .eq('id', id)
+
+      if (delError) throw delError
+
+      setData(prev => ({
+        ...prev,
+        artProjects: (prev.artProjects || []).filter(x => x.id !== id),
+      }))
+
+      setNotice('Project removed.')
+    } catch (err) {
+      console.error(err)
+      setNotice('Failed to remove project: ' + err.message)
+    }
   }
 
   // ═══════════════════════════════════════
@@ -139,59 +172,77 @@ export default function Dashboard() {
     setNotice('Processing image...')
 
     try {
-      const [base64Image] = await filesToData([offerForm._file])
+      const [imageUrl] = await filesToData([offerForm._file])
 
-      setData({
-        ...data,
-        offers: [
-          {
-            id: Date.now(),
-            type: offerForm.type,
-            title: offerForm.title,
-            description: offerForm.description,
-            action: offerForm.action,
-            image: base64Image,
-            price: offerForm.price ? Number(offerForm.price) : null,
-          },
-          ...(data.offers || []),
-        ],
-      })
+      const { data: inserted, error: insertError } = await supabase
+        .from('offers')
+        .insert({
+          type: offerForm.type,
+          title: offerForm.title,
+          description: offerForm.description,
+          action: offerForm.action,
+          image: imageUrl,
+          price: offerForm.price ? Number(offerForm.price) : null,
+        })
+        .select()
+        .single()
+
+      if (insertError) throw insertError
+
+      setData(prev => ({
+        ...prev,
+        offers: [inserted, ...(prev.offers || [])],
+      }))
 
       setOfferForm(emptyOffer)
       setNotice('Offer published on the website.')
     } catch (err) {
       console.error(err)
-      setNotice('Failed to process image. Try a smaller file.')
+      setNotice('Failed to publish offer: ' + err.message)
     }
   }
 
   const updateOffer = async e => {
     e.preventDefault()
 
-    const newImage = offerForm._file
-      ? (await filesToData([offerForm._file]))[0]
-      : null
+    try {
+      let imageUrl = null
+      if (offerForm._file) {
+        ;[imageUrl] = await filesToData([offerForm._file])
+      }
 
-    setData({
-      ...data,
-      offers: (data.offers || []).map(o =>
-        o.id === editingOfferId
-          ? {
-              ...o,
-              type: offerForm.type,
-              title: offerForm.title,
-              description: offerForm.description,
-              action: offerForm.action,
-              image: newImage || o.image,
-              price: offerForm.price ? Number(offerForm.price) : null,
-            }
-          : o
-      ),
-    })
+      const updates = {
+        type: offerForm.type,
+        title: offerForm.title,
+        description: offerForm.description,
+        action: offerForm.action,
+        price: offerForm.price ? Number(offerForm.price) : null,
+      }
+      if (imageUrl) updates.image = imageUrl
 
-    setOfferForm(emptyOffer)
-    setEditingOfferId(null)
-    setNotice('Offer updated successfully.')
+      const { data: updated, error: updateError } = await supabase
+        .from('offers')
+        .update(updates)
+        .eq('id', editingOfferId)
+        .select()
+        .single()
+
+      if (updateError) throw updateError
+
+      setData(prev => ({
+        ...prev,
+        offers: (prev.offers || []).map(o =>
+          o.id === editingOfferId ? updated : o
+        ),
+      }))
+
+      setOfferForm(emptyOffer)
+      setEditingOfferId(null)
+      setNotice('Offer updated successfully.')
+    } catch (err) {
+      console.error(err)
+      setNotice('Failed to update offer: ' + err.message)
+    }
   }
 
   const startEditOffer = o => {
@@ -214,18 +265,54 @@ export default function Dashboard() {
     setOfferForm(emptyOffer)
   }
 
-  const removeOffer = id => {
-    setData({
-      ...data,
-      offers: (data.offers || []).filter(x => x.id !== id),
-    })
+  const removeOffer = async id => {
+    try {
+      const { error: delError } = await supabase
+        .from('offers')
+        .delete()
+        .eq('id', id)
+
+      if (delError) throw delError
+
+      setData(prev => ({
+        ...prev,
+        offers: (prev.offers || []).filter(x => x.id !== id),
+      }))
+
+      setNotice('Offer removed.')
+    } catch (err) {
+      console.error(err)
+      setNotice('Failed to remove offer: ' + err.message)
+    }
   }
 
   // ═══════════════════════════════════════
   //             CONTACT LINKS
   // ═══════════════════════════════════════
-  const updateContact = (key, value) =>
-    setData({ ...data, contacts: { ...data.contacts, [key]: value } })
+  const updateContact = async (key, value) => {
+    const newContacts = { ...data.contacts, [key]: value }
+
+    setData(prev => ({ ...prev, contacts: newContacts }))
+
+    try {
+      const { data: existing } = await supabase
+        .from('contacts')
+        .select('id')
+        .limit(1)
+        .maybeSingle()
+
+      if (existing?.id) {
+        await supabase
+          .from('contacts')
+          .update(newContacts)
+          .eq('id', existing.id)
+      } else {
+        await supabase.from('contacts').insert(newContacts)
+      }
+    } catch (err) {
+      console.error('Failed to save contacts:', err)
+    }
+  }
 
   // ───────── Login Screen ─────────
   if (!signed) {
@@ -273,6 +360,22 @@ export default function Dashboard() {
     )
   }
 
+  // ───────── Loading Screen ─────────
+  if (meta?.loading) {
+    return (
+      <main className="dashboard-shell">
+        <Helmet>
+          <title>Loading · Art Vision</title>
+          <meta name="robots" content="noindex, nofollow" />
+        </Helmet>
+        <section className="login-card">
+          <p className="eyebrow">LOADING</p>
+          <h1>Fetching your data...</h1>
+        </section>
+      </main>
+    )
+  }
+
   // ───────── Dashboard Screen ─────────
   return (
     <main className="dashboard-shell">
@@ -295,9 +398,15 @@ export default function Dashboard() {
         <p className="eyebrow">PORTFOLIO MANAGER</p>
         <h1>Update your art and contact links.</h1>
         <p className="dashboard-lead">
-          Projects and links are saved instantly in this browser and appear on
-          the public website.
+          Projects and links are saved to the cloud and appear on the public
+          website instantly.
         </p>
+
+        {meta?.error && (
+          <p className="notice" style={{ background: '#FEE', color: '#B34235' }}>
+            ⚠️ {meta.error}
+          </p>
+        )}
 
         {notice && (
           <p className="notice">

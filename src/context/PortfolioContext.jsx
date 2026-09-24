@@ -4,9 +4,9 @@ import { usePortfolioData } from '../hooks/usePortfolioData'
 const PortfolioContext = createContext(null)
 
 export function PortfolioProvider({ children }) {
-  const [data, setData] = usePortfolioData()
+  const [data, setData, meta] = usePortfolioData()
   return (
-    <PortfolioContext.Provider value={{ data, setData }}>
+    <PortfolioContext.Provider value={{ data, setData, meta }}>
       {children}
     </PortfolioContext.Provider>
   )
