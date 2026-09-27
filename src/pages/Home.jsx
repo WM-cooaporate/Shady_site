@@ -188,12 +188,16 @@ Place / delivery location: ${details.place}`
         <div className="hero-art">
           <div className="logo-glow" />
           <div className="logo-showcase">
-            <img
-              src="/Logo.png"
-              alt="Art Vision Logo"
-              className="hero-logo"
-              draggable={false}
-            />
+           <img
+  src="/Logo.png"
+  alt="Art Vision Logo"
+  className="hero-logo"
+  draggable={false}
+  fetchpriority="high"
+  width="340"
+  height="340"
+  decoding="sync"
+/>
           </div>
           <div className="dot dot1" />
           <div className="dot dot2" />
