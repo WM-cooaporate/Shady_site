@@ -12,4 +12,4 @@ Disallow: /*?*utm_
 Disallow: /*?*fbclid=
 
 # Sitemap location
-Sitemap: https://artvision.eg/sitemap.xml
+Sitemap: https://art-vision.site/sitemap.xml

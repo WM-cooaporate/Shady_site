@@ -114,10 +114,10 @@ Place / delivery location: ${details.place}`
       <Helmet>
         <title>Art Vision · Murals & Events | Shady Gad</title>
         <meta name="description" content="Creative studio painting cafés, nurseries, and public spaces with colourful murals. Founded by Shady Gad in Egypt. Explore events, products, and custom art." />
-        <link rel="canonical" href="https://artvision.eg/" />
+        <link rel="canonical" href="https://artvision.site/" />
         <meta property="og:title" content="Art Vision · Murals & Events" />
         <meta property="og:description" content="Colourful walls, made with heart. Murals, events, and art for cafés, nurseries, and public spaces." />
-        <meta property="og:url" content="https://artvision.eg/" />
+        <meta property="og:url" content="https://artvision.site/" />
         <meta property="og:type" content="website" />
       </Helmet>
 

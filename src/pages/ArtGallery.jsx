@@ -17,10 +17,10 @@ export default function ArtGallery() {
       <Helmet>
   <title>Art Gallery · Murals & Wall Art | Art Vision</title>
   <meta name="description" content="Explore Art Vision's collection of murals and wall art for cafés, nurseries, and public spaces. Each project tells a story, painted with care by Shady Gad." />
-  <link rel="canonical" href="https://artvision.eg/art" />
+  <link rel="canonical" href="https://art-vision.site/art" />
   <meta property="og:title" content="Art Gallery · Murals & Wall Art | Art Vision" />
   <meta property="og:description" content="Every wall has a story. Explore our collection of murals and wall art." />
-  <meta property="og:url" content="https://artvision.eg/art" />
+  <meta property="og:url" content="https://art-vision.site/art" />
   <meta property="og:type" content="website" />
 </Helmet>
       {/* ───────── Header ───────── */}<header className="topbar">
