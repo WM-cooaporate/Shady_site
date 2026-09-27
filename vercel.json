@@ -1,6 +1,6 @@
 {
     "rewrites": [{
-        "source": "/((?!robots\\.txt|sitemap\\.xml|manifest\\.json|Logo\\.png|favicon\\.ico|assets/).*)",
+        "source": "/((?!robots\\.txt|sitemap\\.xml|manifest\\.json|Logo_11zon\\.webp|favicon\\.ico|assets/).*)",
         "destination": "/"
     }],
     "headers": [{
@@ -23,7 +23,7 @@
         {
             "source": "/Logo_11zon.webp",
             "headers": [
-                { "key": "Cache-Control", "value": "public, max-age=604800" }
+                { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
             ]
         },
         {
