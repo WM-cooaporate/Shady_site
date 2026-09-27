@@ -189,7 +189,7 @@ Place / delivery location: ${details.place}`
           <div className="logo-glow" />
           <div className="logo-showcase">
            <img
-  src="/Logo.png"
+  src="/Logo_11zon.webp"
   alt="Art Vision Logo"
   className="hero-logo"
   draggable={false}

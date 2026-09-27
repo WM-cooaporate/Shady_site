@@ -1,10 +1,11 @@
 import imageCompression from 'browser-image-compression'
 import { supabase, STORAGE_BUCKET } from '../lib/supabase'
+
 const compressOptions = {
-    maxSizeMB: 0.3, // ← أصغر من 0.5
-    maxWidthOrHeight: 1200, // ← أصغر من 1600
+    maxSizeMB: 0.25,
+    maxWidthOrHeight: 1200,
     useWebWorker: true,
-    initialQuality: 0.78, // ← أقل من 0.82
+    initialQuality: 0.75,
 }
 
 async function compressFile(file) {
