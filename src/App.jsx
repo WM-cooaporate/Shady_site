@@ -1,5 +1,6 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import { HelmetProvider } from 'react-helmet-async'   // ← ضيف ده
+import { useEffect } from 'react'
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
+import { HelmetProvider } from 'react-helmet-async'
 import { PortfolioProvider } from './context/PortfolioContext'
 import { useScrollReveal } from './hooks/useScrollReveal'
 
@@ -8,6 +9,20 @@ import ArtGallery from './pages/ArtGallery'
 import Dashboard from './pages/Dashboard'
 import SiteNav from './components/SiteNav'
 import NotFound from './components/NotFound'
+
+function PageTracker() {
+  const location = useLocation()
+
+  useEffect(() => {
+    if (typeof window.gtag === 'function') {
+      window.gtag('config', 'G-XXXXXXXXXX', {
+        page_path: location.pathname + location.search,
+      })
+    }
+  }, [location])
+
+  return null
+}
 
 function PublicLayout({ children }) {
   useScrollReveal()
@@ -21,8 +36,9 @@ function PublicLayout({ children }) {
 
 export default function App() {
   return (
-    <HelmetProvider>                               {/* ← ضيف ده */}
+    <HelmetProvider>
       <BrowserRouter>
+        <PageTracker />
         <PortfolioProvider>
           <Routes>
             <Route path="/shady-dashboard" element={<Dashboard />} />
@@ -46,6 +62,6 @@ export default function App() {
           </Routes>
         </PortfolioProvider>
       </BrowserRouter>
-    </HelmetProvider>                             
+    </HelmetProvider>
   )
 }
