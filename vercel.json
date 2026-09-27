@@ -1,7 +1,8 @@
 {
-    "rewrites": [
-        { "source": "/(.*)", "destination": "/" }
-    ],
+    "rewrites": [{
+        "source": "/((?!robots\\.txt|sitemap\\.xml|manifest\\.json|Logo\\.png|favicon\\.ico|assets/).*)",
+        "destination": "/"
+    }],
     "headers": [{
             "source": "/(.*)",
             "headers": [
