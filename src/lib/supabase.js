@@ -14,5 +14,4 @@ if (!supabaseUrl || !supabaseAnonKey) {
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
-// اسم الـ bucket اللي هنخزن فيه الصور
 export const STORAGE_BUCKET = 'art-vision'

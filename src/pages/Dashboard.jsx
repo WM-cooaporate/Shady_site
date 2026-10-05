@@ -7,7 +7,7 @@ import { Helmet } from 'react-helmet-async'
 import { supabase } from '../lib/supabase'
 
 export default function Dashboard() {
-  const { signed, error, login, logout } = useAuth()
+  const { signed, error, loading, login, logout } = useAuth()
   const { data, setData, meta } = usePortfolio()
 
   // ───────── Login State ─────────
@@ -38,7 +38,7 @@ export default function Dashboard() {
   const handleLogin = async e => {
     e.preventDefault()
     await login(creds.email, creds.password)
-}
+  }
 
   // ═══════════════════════════════════════
   //             PROJECT ACTIONS
@@ -67,7 +67,6 @@ export default function Dashboard() {
 
       if (insertError) throw insertError
 
-      // نحدّث الـ state المحلي بدون إعادة تحميل
       setData(prev => ({
         ...prev,
         artProjects: [inserted, ...(prev.artProjects || [])],
@@ -328,7 +327,8 @@ export default function Dashboard() {
         </section>
       </main>
     )
-}
+  }
+
   if (!signed) {
     return (
       <main className="dashboard-shell">
@@ -374,7 +374,7 @@ export default function Dashboard() {
     )
   }
 
-  // ───────── Loading Screen ─────────
+  // ───────── Loading Data Screen ─────────
   if (meta?.loading) {
     return (
       <main className="dashboard-shell">

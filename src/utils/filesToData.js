@@ -16,9 +16,6 @@ async function compressFile(file) {
     }
 }
 
-/**
- * يرفع الملفات على Supabase Storage ويِرجع الـ URLs
- */
 export const filesToData = async files => {
     const arr = [...files]
     const compressed = await Promise.all(arr.map(compressFile))

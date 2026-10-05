@@ -7,11 +7,13 @@ export function useAuth() {
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
+        // الجلسة عند التحميل
         supabase.auth.getSession().then(({ data: { session } }) => {
             setSigned(!!session)
             setLoading(false)
         })
 
+        // الاستماع لتغييرات الجلسة
         const { data: { subscription } } = supabase.auth.onAuthStateChange(
             (_event, session) => {
                 setSigned(!!session)
@@ -21,7 +23,7 @@ export function useAuth() {
         return () => subscription.unsubscribe()
     }, [])
 
-    const login = async (email, password) => {
+    const login = async(email, password) => {
         setError('')
         setLoading(true)
 
@@ -41,7 +43,7 @@ export function useAuth() {
         return true
     }
 
-    const logout = async () => {
+    const logout = async() => {
         await supabase.auth.signOut()
         setSigned(false)
     }
