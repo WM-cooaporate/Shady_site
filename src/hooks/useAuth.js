@@ -1,27 +1,50 @@
-import { useState } from 'react'
-import { SESSION, ADMIN_EMAIL, ADMIN_PASSWORD } from '../data/seed'
+import { useState, useEffect } from 'react'
+import { supabase } from '../lib/supabase'
 
 export function useAuth() {
-    const [signed, setSigned] = useState(
-        () => sessionStorage.getItem(SESSION) === 'true'
-    )
+    const [signed, setSigned] = useState(false)
     const [error, setError] = useState('')
+    const [loading, setLoading] = useState(true)
 
-    const login = (email, password) => {
-        if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
-            sessionStorage.setItem(SESSION, 'true')
-            setSigned(true)
-            setError('')
-            return true
+    useEffect(() => {
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            setSigned(!!session)
+            setLoading(false)
+        })
+
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(
+            (_event, session) => {
+                setSigned(!!session)
+            }
+        )
+
+        return () => subscription.unsubscribe()
+    }, [])
+
+    const login = async (email, password) => {
+        setError('')
+        setLoading(true)
+
+        const { error: authError } = await supabase.auth.signInWithPassword({
+            email,
+            password,
+        })
+
+        if (authError) {
+            setError(authError.message)
+            setLoading(false)
+            return false
         }
-        setError('Incorrect email or password.')
-        return false
+
+        setSigned(true)
+        setLoading(false)
+        return true
     }
 
-    const logout = () => {
-        sessionStorage.removeItem(SESSION)
+    const logout = async () => {
+        await supabase.auth.signOut()
         setSigned(false)
     }
 
-    return { signed, error, login, logout }
+    return { signed, error, loading, login, logout }
 }

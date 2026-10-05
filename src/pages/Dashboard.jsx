@@ -35,10 +35,10 @@ export default function Dashboard() {
   const [editingOfferId, setEditingOfferId] = useState(null)
 
   // ───────── Login ─────────
-  const handleLogin = e => {
+  const handleLogin = async e => {
     e.preventDefault()
-    login(creds.email, creds.password)
-  }
+    await login(creds.email, creds.password)
+}
 
   // ═══════════════════════════════════════
   //             PROJECT ACTIONS
@@ -315,6 +315,20 @@ export default function Dashboard() {
   }
 
   // ───────── Login Screen ─────────
+  if (loading) {
+    return (
+      <main className="dashboard-shell">
+        <Helmet>
+          <title>Loading · Art Vision</title>
+          <meta name="robots" content="noindex, nofollow" />
+        </Helmet>
+        <section className="login-card">
+          <p className="eyebrow">CHECKING SESSION</p>
+          <h1>Please wait...</h1>
+        </section>
+      </main>
+    )
+}
   if (!signed) {
     return (
       <main className="dashboard-shell">
